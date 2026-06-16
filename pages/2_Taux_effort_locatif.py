@@ -5,53 +5,36 @@ import numpy as np
 
 st.set_page_config(page_title="Taux d'effort locatif", layout="wide")
 
-st.markdown("""
-<style>
-    .main-header {
-        font-size: 2.5rem;
-        font-weight: 700;
-        color: #1f2937;
-        margin-bottom: 0.5rem;
-        text-align: center;
-    }
-    .sub-header {
-        font-size: 1.1rem;
-        color: #6b7280;
-        text-align: center;
-        margin-bottom: 2rem;
-    }
-    .main .block-container {
-        overflow: hidden;
-        max-height: 100vh;
-    }
-    section.main {
-        overflow: hidden;
-    }
-</style>
-""", unsafe_allow_html=True)
+FONT = '"Inter", "Helvetica Neue", Arial, sans-serif'
 
-st.markdown('<p class="main-header">Pression financière du logement</p>', unsafe_allow_html=True)
-st.markdown('<p class="sub-header">Proportion du revenu médian consacrée au loyer dans les grandes villes canadiennes</p>', unsafe_allow_html=True)
+CSS = """
+<style>
+  .page-title    { font-size:2rem; font-weight:700; color:#f9fafb;
+                   text-align:center; margin-bottom:.2rem; }
+  .page-subtitle { font-size:1rem; color:#9ca3af;
+                   text-align:center; margin-bottom:1.5rem; }
+</style>
+"""
+st.markdown(CSS, unsafe_allow_html=True)
+st.markdown('<p class="page-title">Pression financière du logement</p>', unsafe_allow_html=True)
+st.markdown(
+    '<p class="page-subtitle">Proportion du revenu médian consacrée au loyer dans les grandes villes canadiennes</p>',
+    unsafe_allow_html=True,
+)
 
 RENT_FILES = {
-    'loyer_montreal.csv': 'Montréal',
-    'loyer_quebec.csv': 'Québec',
-    'loyer_gatineau.csv': 'Gatineau',
-    'loyer_ottawa.csv': 'Ottawa',
-    'loyer_calgary.csv': 'Calgary',
-    'loyer_edmonton.csv': 'Edmonton',
-    'loyer_toronto.csv': 'Toronto',
-    'loyer_vancouver.csv': 'Vancouver',
-    'loyer_winnipeg.csv': 'Winnipeg'
+    'loyer_montreal.csv': 'Montréal', 'loyer_quebec.csv': 'Québec',
+    'loyer_gatineau.csv': 'Gatineau', 'loyer_ottawa.csv': 'Ottawa',
+    'loyer_calgary.csv': 'Calgary',   'loyer_edmonton.csv': 'Edmonton',
+    'loyer_toronto.csv': 'Toronto',   'loyer_vancouver.csv': 'Vancouver',
+    'loyer_winnipeg.csv': 'Winnipeg',
 }
-
 HOUSING_MAP = {
     'Bachelor units': 'Studio',
     'One bedroom units': '1 chambre',
     'Two bedroom units': '2 chambres',
-    'Three bedroom units': '3 chambres'
+    'Three bedroom units': '3 chambres',
 }
-
 HOUSING_ORDER = ['Studio', '1 chambre', '2 chambres', '3 chambres']
 CITY_ORDER = ['Vancouver', 'Toronto', 'Calgary', 'Ottawa', 'Gatineau', 'Montréal', 'Winnipeg', 'Edmonton', 'Québec']
 TARGET_REGIONS = 'Montréal|Québec|Gatineau|Ottawa|Calgary|Edmonton|Toronto|Vancouver|Winnipeg'
@@ -60,7 +43,7 @@ TARGET_REGIONS = 'Montréal|Québec|Gatineau|Ottawa|Calgary|Edmonton|Toronto|Van
 @st.cache_data
 def load_data():
     df_income = process_income_data('data/revenus.csv')
-    df_rent = process_rent_data('data')
+    df_rent   = process_rent_data('data')
     df_merged = pd.merge(df_rent, df_income, on=['Year', 'City'])
     df_merged['Effort_Rate'] = (df_merged['Average_Rent'] * 12 / df_merged['Median_Income']) * 100
     df_merged = df_merged.dropna(subset=['Average_Rent', 'Median_Income', 'Effort_Rate'])
@@ -70,9 +53,9 @@ def load_data():
 def process_income_data(path):
     df_inc_raw = pd.read_csv(path, encoding='utf-8', low_memory=False)
     df_inc = df_inc_raw[
-        (df_inc_raw['Income source'] == 'Total income') & 
+        (df_inc_raw['Income source'] == 'Total income') &
         (df_inc_raw['Statistics'] == 'Median income (excluding zeros)') &
-        (df_inc_raw['Age group'] == '15 years and over') & 
+        (df_inc_raw['Age group'] == '15 years and over') &
         (df_inc_raw['Gender'] == 'Total - Gender')
     ]
     df_inc = df_inc[df_inc['GEO'].str.contains(TARGET_REGIONS, na=False, case=False)]
@@ -117,24 +100,27 @@ def process_rent_data(folder_path):
 
 def create_heatmap(df, selected_year):
     df_year = df[df['Year'] == selected_year].copy()
-    
+
     pivot_effort = df_year.pivot_table(index='City', columns='Housing_Type', values='Effort_Rate', aggfunc='mean')
     pivot_effort = pivot_effort.reindex(columns=HOUSING_ORDER)
     cities_present = [c for c in CITY_ORDER if c in pivot_effort.index]
     pivot_effort = pivot_effort.reindex(cities_present)
-    
+
     pivot_rent = df_year.pivot_table(index='City', columns='Housing_Type', values='Average_Rent', aggfunc='mean')
     pivot_rent = pivot_rent.reindex(columns=HOUSING_ORDER).reindex(cities_present)
-    
+
     pivot_income = df_year.pivot_table(index='City', columns='Housing_Type', values='Median_Income', aggfunc='mean')
     pivot_income = pivot_income.reindex(columns=HOUSING_ORDER).reindex(cities_present)
-    
-    z_values = pivot_effort.values
+
+    z_values    = pivot_effort.values
     rent_values = pivot_rent.values
     income_values = pivot_income.values
-    
-    annotations_text = np.where(np.isnan(z_values), '', np.char.add(np.round(z_values, 0).astype(int).astype(str), '%'))
-    
+
+    annotations_text = np.where(
+        np.isnan(z_values), '',
+        np.char.add(np.round(z_values, 0).astype(int).astype(str), '%')
+    )
+
     hover_text = []
     for i, city in enumerate(cities_present):
         row = []
@@ -142,33 +128,58 @@ def create_heatmap(df, selected_year):
             if np.isnan(z_values[i, j]):
                 row.append('')
             else:
-                text = (f"<b>{city}</b><br>Année: {selected_year}<br>Type: {housing}<br>"
-                        f"Loyer moyen: {rent_values[i, j]:,.0f} $/mois<br>"
-                        f"Revenu médian: {income_values[i, j]:,.0f} $/an<br>"
-                        f"<b>Taux d'effort: {z_values[i, j]:.1f}%</b>")
+                text = (
+                    f"<b>{city}</b><br>Année: {selected_year}<br>Type: {housing}<br>"
+                    f"Loyer moyen: {rent_values[i, j]:,.0f} $/mois<br>"
+                    f"Revenu médian: {income_values[i, j]:,.0f} $/an<br>"
+                    f"<b>Taux d'effort: {z_values[i, j]:.1f}%</b>"
+                )
                 row.append(text)
         hover_text.append(row)
-    
+
     fig = go.Figure(data=go.Heatmap(
-        z=z_values, x=HOUSING_ORDER, y=cities_present, colorscale='Reds',
-        zmin=0, zmax=100, text=annotations_text, texttemplate='%{text}',
-        textfont={'size': 16, 'color': 'black', 'family': 'Arial Black'},
+        z=z_values, x=HOUSING_ORDER, y=cities_present,
+        colorscale='Reds',
+        zmin=0, zmax=100,
+        text=annotations_text, texttemplate='%{text}',
+        textfont={'size': 16, 'color': 'white', 'family': 'Arial Black'},
         hovertext=hover_text, hovertemplate='%{hovertext}<extra></extra>',
         colorbar=dict(
-            title=dict(text='Taux d\'effort', side='right', font=dict(size=14)),
-            ticksuffix='%', tickvals=[0, 30, 50, 70, 100], ticktext=['0%', '30%', '50%', '70%', '100%'],
-            len=0.85, thickness=20, outlinewidth=0, bgcolor='rgba(255,255,255,0.9)'
+            title=dict(text="Taux d'effort", side='right', font=dict(size=13, color='#d1d5db')),
+            ticksuffix='%',
+            tickvals=[0, 30, 50, 70, 100],
+            ticktext=['0%', '30%', '50%', '70%', '100%'],
+            tickfont=dict(color='#9ca3af', size=12),
+            len=0.85, thickness=18, outlinewidth=0,
+            bgcolor='rgba(0,0,0,0)',
         ),
-        xgap=3, ygap=3
+        xgap=3, ygap=3,
     ))
-    
+
     fig.update_layout(
-        title=dict(text=f'<b>Année {selected_year}</b>', font=dict(size=24, color='#1f2937'), x=0.5, xanchor='center'),
-        xaxis=dict(title=dict(text='Type de logement', font=dict(size=14, color='#4b5563')), tickfont=dict(size=13, color='#374151'), side='bottom'),
-        yaxis=dict(title=dict(text='', font=dict(size=14)), tickfont=dict(size=13, color='#374151')),
-        height=550, margin=dict(l=120, r=80, t=70, b=70),
-        paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
-        hoverlabel=dict(bgcolor='white', font_size=13, font_family='Arial')
+        title=dict(
+            text=f'<b>Année {selected_year}</b>',
+            font=dict(size=22, color='#f9fafb', family=FONT),
+            x=0.5, xanchor='center',
+        ),
+        xaxis=dict(
+            title=dict(text='Type de logement', font=dict(size=13, color='#9ca3af')),
+            tickfont=dict(size=13, color='#d1d5db'),
+            side='bottom',
+        ),
+        yaxis=dict(
+            title=dict(text='', font=dict(size=13)),
+            tickfont=dict(size=13, color='#d1d5db'),
+        ),
+        height=550,
+        margin=dict(l=120, r=80, t=70, b=70),
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        font=dict(family=FONT),
+        hoverlabel=dict(
+            bgcolor='#1f2937', font_size=13, font_family=FONT,
+            bordercolor='rgba(255,255,255,0.15)',
+        ),
     )
     return fig
 
