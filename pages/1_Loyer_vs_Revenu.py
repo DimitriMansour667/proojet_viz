@@ -32,6 +32,7 @@ HOUSING_MAP = {
     'Bachelor units': 'Studio',
     'One bedroom units': '1 chambre',
     'Two bedroom units': '2 chambres',
+    'Three bedroom units': '3 chambres',
 }
 TARGET_REGIONS = 'Montréal|Québec|Gatineau|Ottawa|Calgary|Edmonton|Toronto|Vancouver|Winnipeg'
 
