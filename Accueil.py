@@ -102,7 +102,7 @@ with c4:
     st.markdown("""
       <div class="card">
         <div class="card-num">04</div>
-        <div class="card-title">Charge locative Homme vs Femme</div>
+        <div class="card-title">Écart Hommes Femmes</div>
         <div class="card-desc">
           Part du revenu médian d'emploi consacrée au loyer par tranche d'âge et par genre.
           Identifie les inégalités face à la pression locative entre 1992 et 2024.
