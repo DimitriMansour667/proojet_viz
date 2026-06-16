@@ -3,7 +3,27 @@ import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-st.set_page_config(page_title="Visu 3", page_icon="📊", layout="wide")
+st.set_page_config(page_title="Charge locative par âge", layout="wide")
+
+FONT = '"Inter", "Helvetica Neue", Arial, sans-serif'
+
+CSS = """
+<style>
+  .page-title    { font-size:2rem; font-weight:700; color:#f9fafb;
+                   text-align:center; margin-bottom:.2rem; }
+  .page-subtitle { font-size:1rem; color:#9ca3af;
+                   text-align:center; margin-bottom:1.5rem; }
+</style>
+"""
+st.markdown(CSS, unsafe_allow_html=True)
+st.markdown('<p class="page-title">Charge locative par tranche d\'âge</p>', unsafe_allow_html=True)
+st.markdown(
+    '<p class="page-subtitle">'
+    'Part du revenu médian d\'emploi consacrée au loyer en 2024 vs 1992, '
+    'par tranche d\'âge — moyenne des grandes RMR canadiennes'
+    '</p>',
+    unsafe_allow_html=True,
+)
 
 CITY_FILES = [
     "data/loyer_calgary.csv", "data/loyer_edmonton.csv", "data/loyer_montreal.csv",
@@ -90,8 +110,8 @@ def build_figure(income, rent_by_unit):
             traces.append(go.Pie(
                 values=[burden, max(100 - burden, 0)],
                 labels=["Loyer (total)", "Reste à vivre"],
-                marker_colors=["#C25A00", "#2A7D4F"],
-                marker_line={"color": "#ffffff", "width": 2},
+                marker_colors=["#fb7185", "#34d399"],
+                marker_line={"color": "rgba(255,255,255,0.08)", "width": 2},
                 hole=0.55,
                 direction="clockwise",
                 sort=False,
@@ -99,7 +119,7 @@ def build_figure(income, rent_by_unit):
                 textinfo="none",
                 domain={"x": pie_x(col_i), "y": PIE_Y},
                 title={
-                    "text": f"<span style='color:#cc0000;font-size:15px'><b>+{increase:.1f}%</b></span><br><span style='font-size:10px;color:#999'>depuis {BASE_YEAR}</span>",
+                    "text": f"<span style='color:#fb7185;font-size:15px'><b>+{increase:.1f}%</b></span><br><span style='font-size:10px;color:#6b7280'>depuis {BASE_YEAR}</span>",
                     "position": "middle center",
                 },
                 hovertemplate="<b>%{label}</b><br>%{value:.1f} % du revenu<extra></extra>",
@@ -113,11 +133,12 @@ def build_figure(income, rent_by_unit):
     fig.frames = frames
 
     fig.update_layout(
-        paper_bgcolor="#ffffff",
-        font={"color": "#222", "family": "Inter, sans-serif"},
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font={"color": "#d1d5db", "family": FONT},
         height=460,
         margin={"l": 20, "r": 20, "t": 100, "b": 80},
-        legend={"orientation": "h", "x": 0.5, "xanchor": "center", "y": -0.08, "bgcolor": "rgba(0,0,0,0)"},
+        legend={"orientation": "h", "x": 0.5, "xanchor": "center", "y": -0.08, "bgcolor": "rgba(0,0,0,0)", "font": {"color": "#d1d5db"}},
         updatemenus=[{
             "type": "buttons",
             "direction": "right",
@@ -125,10 +146,10 @@ def build_figure(income, rent_by_unit):
             "y": 1.12, "yanchor": "bottom",
             "showactive": True,
             "active": 2,
-            "bgcolor": "#f5f5f5",
-            "bordercolor": "#ddd",
+            "bgcolor": "rgba(255,255,255,0.07)",
+            "bordercolor": "rgba(255,255,255,0.15)",
             "borderwidth": 1,
-            "font": {"size": 13, "color": "#444"},
+            "font": {"size": 13, "color": "#d1d5db", "family": FONT},
             "buttons": [
                 {
                     "label": label,
@@ -141,13 +162,9 @@ def build_figure(income, rent_by_unit):
     )
 
     for ann in fig.layout.annotations:
-        ann.update(font={"size": 13, "color": "#222"})
+        ann.update(font={"size": 13, "color": "#d1d5db", "family": FONT})
 
     return fig
-
-
-st.title("Une hausse des loyers qui affecte particulièrement les jeunes actifs et les plus âgés")
-st.markdown(f"Part du revenu médian d'emploi consacrée au loyer en {CURRENT_YEAR} vs {BASE_YEAR}, par tranche d'âge, moyenne des grandes RMR canadiennes")
 
 income, rent_by_unit = load_data()
 st.plotly_chart(build_figure(income, rent_by_unit), use_container_width=True)

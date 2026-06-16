@@ -39,6 +39,14 @@ CSS = """
   .context-text {
     font-size: .95rem; color: #9ca3af; line-height: 1.7;
   }
+  .sources-title {
+    font-size: 1.2rem; font-weight: 600; color: #f3f4f6; margin-bottom: .8rem;
+  }
+  .source-item {
+    font-size: .85rem; color: #6b7280; line-height: 1.6; margin-bottom: .5rem;
+  }
+  .source-item a { color: #60a5fa; text-decoration: none; }
+  .source-item a:hover { text-decoration: underline; }
 </style>
 """
 st.markdown(CSS, unsafe_allow_html=True)
@@ -52,7 +60,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-c1, c2 = st.columns(2)
+c1, c2, c3 = st.columns(3)
 
 with c1:
     st.markdown("""
@@ -78,6 +86,18 @@ with c2:
     </div>
     """, unsafe_allow_html=True)
 
+with c3:
+    st.markdown("""
+    <div class="card">
+      <div class="card-num">03</div>
+      <div class="card-title">Charge locative par âge</div>
+      <div class="card-desc">
+        Part du revenu médian d'emploi consacrée au loyer en 2024 vs 1992, par tranche d'âge.
+        Identifie quelles générations sont les plus touchées par la hausse des loyers.
+      </div>
+    </div>
+    """, unsafe_allow_html=True)
+
 st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
 
 st.markdown('<p class="context-title">Contexte</p>', unsafe_allow_html=True)
@@ -92,5 +112,23 @@ au-delà de <b style="color:#fb7185">30 %</b>, un ménage est considéré en sit
 <p class="context-text" style="margin-top:.8rem;">
 Les données proviennent de <b style="color:#f3f4f6">Statistique Canada</b> :
 l'enquête sur les logements locatifs (SCHL) et les données sur le revenu des particuliers.
+</p>
+""", unsafe_allow_html=True)
+
+st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
+
+st.markdown('<p class="sources-title">Sources</p>', unsafe_allow_html=True)
+st.markdown("""
+<p class="source-item">
+  1. Statistics Canada. Table 34-10-0133-01 — Canada Mortgage and Housing Corporation, average rents for areas with a population of 10,000 and over.<br>
+  <a href="https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=3410013301" target="_blank">
+    https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=3410013301
+  </a>
+</p>
+<p class="source-item">
+  2. Statistics Canada. Table 11-10-0239-01 — Income of individuals by age group, gender and income source, Canada, provinces and selected census metropolitan areas.<br>
+  <a href="https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1110023901" target="_blank">
+    https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1110023901
+  </a>
 </p>
 """, unsafe_allow_html=True)
