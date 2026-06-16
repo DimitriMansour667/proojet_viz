@@ -60,7 +60,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-c1, c2, c3 = st.columns(3)
+c1, c2, c3, c4 = st.columns(4)
 
 with c1:
     st.markdown("""
@@ -97,6 +97,18 @@ with c3:
       </div>
     </div>
     """, unsafe_allow_html=True)
+    
+with c4:
+    st.markdown("""
+      <div class="card">
+        <div class="card-num">04</div>
+        <div class="card-title">Charge locative Homme vs Femme</div>
+        <div class="card-desc">
+          Part du revenu médian d'emploi consacrée au loyer par tranche d'âge et par genre.
+          Identifie les inégalités face à la pression locative entre 1992 et 2024.
+        </div>
+      </div>
+      """, unsafe_allow_html=True)
 
 st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
 
