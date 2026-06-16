@@ -41,15 +41,7 @@ def pie_x(col_i):
 
 @st.cache_data
 def load_data():
-    income_raw = pd.read_csv("data/revenus_age.csv", low_memory=False)
-    income = income_raw[
-        (income_raw["GEO"] == "Canada") &
-        (income_raw["Age group"].isin(AGE_GROUPS)) &
-        (income_raw["Gender"] == "Total - Gender") &
-        (income_raw["Income source"] == "Employment income") &
-        (income_raw["Statistics"] == "Median income (excluding zeros)") &
-        (income_raw["VALUE"].notna())
-    ][["REF_DATE", "Age group", "VALUE"]].rename(columns={"REF_DATE": "year", "VALUE": "income"})
+    income = pd.read_csv("data/income_by_age.csv").rename(columns={"REF_DATE": "year", "VALUE": "income"})
 
     rent_raw = pd.concat([pd.read_csv(f, low_memory=False) for f in CITY_FILES])
     rent_raw = rent_raw[
