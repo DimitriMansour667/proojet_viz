@@ -2,27 +2,13 @@ import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+from utils import init_page, FONT
 
 st.set_page_config(page_title="Charge locative par âge", layout="wide")
 
-FONT = '"Inter", "Helvetica Neue", Arial, sans-serif'
-
-CSS = """
-<style>
-  .page-title    { font-size:2rem; font-weight:700; color:#f9fafb;
-                   text-align:center; margin-bottom:.2rem; }
-  .page-subtitle { font-size:1rem; color:#9ca3af;
-                   text-align:center; margin-bottom:1.5rem; }
-</style>
-"""
-st.markdown(CSS, unsafe_allow_html=True)
-st.markdown('<p class="page-title">Charge locative par tranche d\'âge</p>', unsafe_allow_html=True)
-st.markdown(
-    '<p class="page-subtitle">'
-    'Part du revenu médian d\'emploi consacrée au loyer en 2024 vs 1992, '
-    'par tranche d\'âge — moyenne des grandes RMR canadiennes'
-    '</p>',
-    unsafe_allow_html=True,
+init_page(
+    title="Charge locative par tranche d\'âge",
+    subtitle="Part du revenu médian d\'emploi consacrée au loyer en 2024 vs 1992, par tranche d\'âge — moyenne des grandes RMR canadiennes"
 )
 
 CITY_FILES = [

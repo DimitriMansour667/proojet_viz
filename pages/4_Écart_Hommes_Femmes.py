@@ -1,45 +1,14 @@
 import streamlit as st
 import plotly.graph_objects as go
 import pandas as pd
+from utils import init_page, process_rent_data, FONT, HOUSING_ORDER
 
 st.set_page_config(page_title="Écart H/F", page_icon="📊", layout="wide")
 
-FONT = '"Inter", "Helvetica Neue", Arial, sans-serif'
-
-CSS = """
-<style>
-  .page-title    { font-size:2rem; font-weight:700; color:#f9fafb;
-                   text-align:center; margin-bottom:.2rem; }
-  .page-subtitle { font-size:1rem; color:#9ca3af;
-                   text-align:center; margin-bottom:1.5rem; }
-</style>
-"""
-st.markdown(CSS, unsafe_allow_html=True)
-st.markdown(
-    '<p class="page-title">Écart de pression locative — Hommes vs Femmes</p>',
-    unsafe_allow_html=True,
+init_page(
+    title="Écart de pression locative — Hommes vs Femmes",
+    subtitle="Part du revenu médian mensuel consacrée au loyer, par tranche d\'âge (1992–2024)"
 )
-st.markdown(
-    '<p class="page-subtitle">'
-    'Part du revenu médian mensuel consacrée au loyer, par tranche d\'âge (1992–2024)'
-    '</p>',
-    unsafe_allow_html=True,
-)
-
-RENT_FILES = {
-    'loyer_montreal.csv': 'Montréal', 'loyer_quebec.csv': 'Québec',
-    'loyer_gatineau.csv': 'Gatineau', 'loyer_ottawa.csv': 'Ottawa',
-    'loyer_calgary.csv': 'Calgary',   'loyer_edmonton.csv': 'Edmonton',
-    'loyer_toronto.csv': 'Toronto',   'loyer_vancouver.csv': 'Vancouver',
-    'loyer_winnipeg.csv': 'Winnipeg',
-}
-HOUSING_MAP = {
-    'Bachelor units': 'Studio',
-    'One bedroom units': '1 chambre',
-    'Two bedroom units': '2 chambres',
-    'Three bedroom units': '3 chambres',
-}
-HOUSING_ORDER = ['Studio', '1 chambre', '2 chambres', '3 chambres']
 
 INCOME_FILE = 'data/revenus_gender_age.csv'
 YEAR_MIN, YEAR_MAX = 1992, 2024
@@ -85,34 +54,6 @@ def process_income_data():
     df['Age'] = df['Age group'].map(AGE_MAP)
     df['Median_Income'] = pd.to_numeric(df['VALUE'], errors='coerce') / 12
     return df[['Year', 'City', 'Age', 'Gender', 'Median_Income']]
-
-
-def process_rent_data(folder_path):
-    all_rents = []
-    for file_name, city_name in RENT_FILES.items():
-        try:
-            raw = pd.read_csv(f"{folder_path}/{file_name}", encoding='utf-8', low_memory=False)
-        except FileNotFoundError:
-            continue
-        if city_name == 'Gatineau':
-            city = raw[raw['GEO'] == 'Ottawa-Gatineau, Quebec part, Ontario/Quebec'].copy()
-        elif city_name == 'Ottawa':
-            city = raw[raw['GEO'] == 'Ottawa-Gatineau, Ontario part, Ontario/Quebec'].copy()
-        else:
-            city = raw[raw['GEO'].str.contains(city_name, na=False, case=False)].copy()
-        city = city[city['Type of structure'] == 'Row and apartment structures of three units and over']
-        city['Housing_Type'] = city['Type of unit'].map(HOUSING_MAP)
-        city = city.dropna(subset=['Housing_Type'])
-        city = city[['REF_DATE', 'Housing_Type', 'VALUE']]
-        city.columns = ['Year', 'Housing_Type', 'Average_Rent']
-        city['City'] = city_name
-        city['Year'] = city['Year'].astype(int)
-        city['Average_Rent'] = pd.to_numeric(city['Average_Rent'], errors='coerce')
-        all_rents.append(city)
-    if not all_rents:
-        return pd.DataFrame(columns=['Year', 'City', 'Housing_Type', 'Average_Rent'])
-    return pd.concat(all_rents, ignore_index=True)
-
 
 my_df = load_data()
 
