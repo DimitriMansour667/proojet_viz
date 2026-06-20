@@ -2,7 +2,7 @@ import streamlit as st
 import plotly.graph_objects as go
 import pandas as pd
 import numpy as np
-from utils import init_page, process_rent_data, TARGET_REGIONS, FONT, HOUSING_ORDER
+from utils import init_page, process_rent_data, TARGET_REGIONS, FONT, HOUSING_ORDER, plot_chart
 
 st.set_page_config(page_title="Taux d'effort locatif", layout="wide")
 
@@ -140,6 +140,6 @@ selected_year = st.slider("Année", min_value=min_year, max_value=max_year, valu
 
 if selected_year in available_years:
     fig = create_heatmap(df, selected_year)
-    st.plotly_chart(fig, use_container_width=True)
+    plot_chart(fig)
 else:
     st.warning(f"Données non disponibles pour l'année {selected_year}")

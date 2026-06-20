@@ -17,8 +17,6 @@ uv run streamlit run main.py
 
 ## Ajouter un package
 
-Ne pas utiliser `pip install`. Utiliser à la place :
-
 ```powershell
 uv add nom_du_package
 ```

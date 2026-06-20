@@ -1,7 +1,7 @@
 import streamlit as st
 import plotly.graph_objects as go
 import pandas as pd
-from utils import init_page, process_rent_data, TARGET_REGIONS, FONT
+from utils import init_page, process_rent_data, TARGET_REGIONS, FONT, COLOR_INCOME, COLOR_RENT, plot_chart
 
 st.set_page_config(page_title="Loyer vs Revenu", layout="wide")
 
@@ -85,7 +85,7 @@ def create_figure(filtered_df):
         y=filtered_df['Median_Income'],
         mode='lines',
         name='Revenu médian',
-        line=dict(color='#60a5fa', width=3),
+        line=dict(color=COLOR_INCOME, width=3),
         hoverinfo='skip',
     ))
 
@@ -94,8 +94,8 @@ def create_figure(filtered_df):
         y=filtered_df['Average_Rent'],
         mode='lines+markers',
         name='Loyer moyen',
-        line=dict(color='#fb7185', width=3),
-        marker=dict(size=7, color='#fb7185', line=dict(width=1.5, color='rgba(255,255,255,0.2)')),
+        line=dict(color=COLOR_RENT, width=3),
+        marker=dict(size=7, color=COLOR_RENT, line=dict(width=1.5, color='rgba(255,255,255,0.2)')),
         hovertemplate=get_bubble_hover_template(),
         customdata=filtered_df[['Median_Income', 'Effort_Rate', 'Status']],
     ))
@@ -138,4 +138,4 @@ def create_figure(filtered_df):
 selected_city, selected_housing = display_filters(my_df)
 filtered_df = filter_and_sort_data(my_df, selected_city, selected_housing)
 fig = create_figure(filtered_df)
-st.plotly_chart(fig, use_container_width=True)
+plot_chart(fig)

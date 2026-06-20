@@ -4,6 +4,13 @@ import numpy as np
 
 FONT = '"Inter", "Helvetica Neue", Arial, sans-serif'
 
+COLOR_INCOME    = '#2dd4bf'  # revenu / positif
+COLOR_RENT      = '#fb923c'  # loyer / charge
+COLOR_MALE      = '#38bdf8'  # hommes
+COLOR_FEMALE    = '#f472b6'  # femmes
+COLOR_REMAINING = '#4ade80'  # reste à vivre
+COLOR_THRESHOLD = '#f87171'  # seuil danger
+
 CSS = """
 <style>
   .page-title    { font-size:2rem; font-weight:700; color:#f9fafb;
@@ -36,6 +43,12 @@ def init_page(title, subtitle):
     st.markdown(CSS, unsafe_allow_html=True)
     st.markdown(f'<p class="page-title">{title}</p>', unsafe_allow_html=True)
     st.markdown(f'<p class="page-subtitle">{subtitle}</p>', unsafe_allow_html=True)
+
+
+def plot_chart(fig, **kwargs):
+    _, col, _ = st.columns([1, 8, 1])
+    with col:
+        st.plotly_chart(fig, use_container_width=True, **kwargs)
     
     
 def process_rent_data(folder_path):

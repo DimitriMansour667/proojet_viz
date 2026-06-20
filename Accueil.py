@@ -22,7 +22,7 @@ CSS = """
     height: 100%;
   }
   .card-num {
-    font-size: 2rem; font-weight: 700; color: #60a5fa;
+    font-size: 2rem; font-weight: 700; color: #2dd4bf;
     margin-bottom: .3rem;
   }
   .card-title {
@@ -45,7 +45,7 @@ CSS = """
   .source-item {
     font-size: .85rem; color: #6b7280; line-height: 1.6; margin-bottom: .5rem;
   }
-  .source-item a { color: #60a5fa; text-decoration: none; }
+  .source-item a { color: #2dd4bf; text-decoration: none; }
   .source-item a:hover { text-decoration: underline; }
 </style>
 """
@@ -118,7 +118,7 @@ st.markdown("""
 Le marché locatif canadien a subi une transformation profonde depuis les années 1990.
 Dans plusieurs grandes villes, les loyers ont augmenté bien plus vite que les revenus,
 réduisant considérablement l'accessibilité au logement pour les ménages à revenu médian.
-Le <b style="color:#f3f4f6">taux d'effort</b> — soit la part du revenu consacrée au loyer — est un indicateur clé :
+Le <b style="color:#f3f4f6">taux d'effort</b>, soit la part du revenu consacrée au loyer, est un indicateur clé :
 au-delà de <b style="color:#fb7185">30 %</b>, un ménage est considéré en situation de tension financière liée au logement.
 </p>
 <p class="context-text" style="margin-top:.8rem;">

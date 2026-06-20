@@ -2,13 +2,13 @@ import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-from utils import init_page, FONT
+from utils import init_page, FONT, COLOR_RENT, COLOR_REMAINING, COLOR_THRESHOLD, plot_chart
 
 st.set_page_config(page_title="Charge locative par âge", layout="wide")
 
 init_page(
     title="Charge locative par tranche d\'âge",
-    subtitle="Part du revenu médian d\'emploi consacrée au loyer en 2024 vs 1992, par tranche d\'âge — moyenne des grandes RMR canadiennes"
+    subtitle="Part du revenu médian d\'emploi consacrée au loyer en 2024 vs 1992, par tranche d\'âge"
 )
 
 CITY_FILES = [
@@ -96,7 +96,7 @@ def build_figure(income, rent_by_unit):
             traces.append(go.Pie(
                 values=[burden, max(100 - burden, 0)],
                 labels=["Loyer (total)", "Reste à vivre"],
-                marker_colors=["#fb7185", "#34d399"],
+                marker_colors=[COLOR_RENT, COLOR_REMAINING],
                 marker_line={"color": "rgba(255,255,255,0.08)", "width": 2},
                 hole=0.55,
                 direction="clockwise",
@@ -105,7 +105,7 @@ def build_figure(income, rent_by_unit):
                 textinfo="none",
                 domain={"x": pie_x(col_i), "y": PIE_Y},
                 title={
-                    "text": f"<span style='color:#fb7185;font-size:15px'><b>+{increase:.1f}%</b></span><br><span style='font-size:10px;color:#6b7280'>depuis {BASE_YEAR}</span>",
+                    "text": f"<span style='color:{COLOR_THRESHOLD};font-size:15px'><b>+{increase:.1f}%</b></span><br><span style='font-size:10px;color:#6b7280'>depuis {BASE_YEAR}</span>",
                     "position": "middle center",
                 },
                 hovertemplate="<b>%{label}</b><br>%{value:.1f} % du revenu<extra></extra>",
@@ -153,7 +153,7 @@ def build_figure(income, rent_by_unit):
     return fig
 
 income, rent_by_unit = load_data()
-st.plotly_chart(build_figure(income, rent_by_unit), use_container_width=True)
+plot_chart(build_figure(income, rent_by_unit))
 
 st.caption("Revenu : revenu médian d'emploi (Canada, 2024 $, StatCan 11-10-0239). Loyer : moyenne des grandes RMR (CMHC 34-10-0133).")
 st.caption("Revenu net estimé (brut × 0,75, taux effectif moyen ~25 %, fédéral + provincial)")

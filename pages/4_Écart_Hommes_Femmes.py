@@ -1,7 +1,7 @@
 import streamlit as st
 import plotly.graph_objects as go
 import pandas as pd
-from utils import init_page, process_rent_data, FONT, HOUSING_ORDER
+from utils import init_page, process_rent_data, FONT, HOUSING_ORDER, COLOR_MALE, COLOR_FEMALE, COLOR_THRESHOLD, plot_chart
 
 st.set_page_config(page_title="Écart H/F", page_icon="📊", layout="wide")
 
@@ -22,7 +22,7 @@ AGE_MAP = {
     '65 years and over': '65 ans +',
 }
 
-GENDER_COLORS = {'Homme': '#60a5fa', 'Femme': '#fb7185'}
+GENDER_COLORS = {'Homme': COLOR_MALE, 'Femme': COLOR_FEMALE}
 CONNECTOR_COLOR = 'rgba(148,163,184,0.40)'
 THRESHOLD = 30.0
 
@@ -76,7 +76,8 @@ with col2:
     default_h = housings.index('1 chambre') if '1 chambre' in housings else 0
     selected_housing = st.selectbox("Type de logement :", housings, index=default_h)
 
-chart_ph = st.empty()
+_, _chart_col, _ = st.columns([1, 8, 1])
+chart_ph = _chart_col.empty()
 
 years = sorted(
     my_df[(my_df['City'] == selected_city) &
@@ -136,7 +137,7 @@ def build_figure(df, city, housing, year):
 
     x_max = max(sub['Effort_Rate'].max() * 1.12, 45.0)
     fig.add_vline(
-        x=THRESHOLD, line_dash='dash', line_color='#f87171', opacity=0.55,
+        x=THRESHOLD, line_dash='dash', line_color=COLOR_THRESHOLD, opacity=0.55,
         annotation_text='Seuil 30 %', annotation_position='top',
         annotation_font=dict(color='#f87171', size=11),
     )
@@ -172,6 +173,7 @@ def build_figure(df, city, housing, year):
 
 fig = build_figure(my_df, selected_city, selected_housing, selected_year)
 chart_ph.plotly_chart(fig, use_container_width=True)
+
 
 st.caption(
     "Taux d'effort = loyer moyen mensuel / revenu médian mensuel. "
